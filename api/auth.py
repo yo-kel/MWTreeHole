@@ -123,7 +123,7 @@ def login():
     user = login_or_register(mail)
     if user is None:
         return jsonify({"status":"failure","message":"unable to create"})
-    return jsonify({"status":"success","message":"ok","token":user.generate_auth_token()})
+    return jsonify({"status":"success","message":"ok","token":user.generate_auth_token(expiration=60*60)})
 
 @api_bp.route('/test_token', methods=['GET', 'POST'])
 @token_required

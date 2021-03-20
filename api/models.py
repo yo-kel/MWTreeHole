@@ -69,5 +69,5 @@ class Comments(db.Model):
 
     post = db.relationship('Post', back_populates='comments')
     author = db.relationship('User', back_populates='comments')
-    replies = db.relationship('Comments', back_populates='replied', cascade='all')
-    replied = db.relationship('Comments', back_populates='replies', remote_side=[id])
+    replies = db.relationship('Comments', back_populates='replied', cascade='all') #回复自己的
+    replied = db.relationship('Comments', back_populates='replies', remote_side=[id]) #回复的
