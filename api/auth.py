@@ -1,10 +1,8 @@
 # coding:utf-8
 from api import api_bp
 from flask import request,abort,current_app,jsonify
-from flask_mail import Message, Mail
-import random
 from datetime import datetime, timedelta
-from .models import db,User
+from .models import db,User,token_required
 import json
 import redis
 import re
@@ -70,10 +68,9 @@ def check_mail_code(mail, code):
 
 def login_or_register(_mail):
     user_login = User.query.filter_by(mail = _mail).first()
-    if user_login: #用户存在则直接返回信息
+    if user_login: #用户存在则直接返回
         user = User.query.filter_by(id=user_login.id).first()
-        data = {"id":user.id,"name":user.name}
-        return data
+        return user
     else:
         try:
             new_user = User(name="nickname", mail=_mail, user_group=0, token=None)
@@ -82,8 +79,9 @@ def login_or_register(_mail):
         except Exception as e:
             print(e)
             return None
-        data = dict(id=new_user.id, name=User.name)
-        return data
+        return new_user
+
+#apis below
 
 @api_bp.route('/email_captcha', methods=['GET', 'POST'])
 def email_captcha():
@@ -122,8 +120,12 @@ def login():
     flag = check_mail_code(mail, code)
     if not flag:
         return jsonify({"status":"failure","message":"wrong code"})
-    user_data = login_or_register(mail)
-    if user_data is None:
+    user = login_or_register(mail)
+    if user is None:
         return jsonify({"status":"failure","message":"unable to create"})
-    return jsonify({"status":"success","message":"ok","user_data":user_data})
-    
+    return jsonify({"status":"success","message":"ok","token":user.generate_auth_token()})
+
+@api_bp.route('/test_token', methods=['GET', 'POST'])
+@token_required
+def test_token():
+    return 'okok'

@@ -17,7 +17,7 @@ def creatapp():
     return app
 db.create_all(app=creatapp())
 
-creatapp()
+#creatapp()
 @app.route('/')
 def index():
     return "Hello, World!"
