@@ -10,4 +10,4 @@
 
 ## 接口文档
 
-[接口文档](./api-docoment.md)
+[接口文档](./api-document.md)
