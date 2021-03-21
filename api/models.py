@@ -49,7 +49,7 @@ class Post(db.Model):
     title = db.Column(db.String(100), index=True, nullable=False) #标题
     content = db.Column(db.Text, nullable=False)  #内容
     timestamps = db.Column(db.DateTime, default=datetime.datetime.now) #发表时间
-
+    kind = db.Column(db.Integer,default = 0) #文章类别: 0 树洞 1 爱选修
     status = db.Column(db.Integer, default = 1) #状态 1为正常，0为封禁
 
     author = db.Column(db.Text) #作者信息,使用RSA算法保证安全
