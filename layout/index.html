@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>多轮树洞</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+      body {
+        padding-top: 70px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1"
+            aria-expanded="false"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">多轮树洞</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">账户</a></li>
+            <li><a href="#">发表</a></li>
+          </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+      </div>
+      <!-- /.container-fluid -->
+    </nav>
+
+    <div class="container" id="all_container">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">带有 title 的面板标题</h3>
+        </div>
+        <div class="panel-body">面板内容</div>
+      </div>
+      <div class="panel panel-default" v-for="post in posts">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{post.title}}</h3>
+        </div>
+        <div class="panel-body">{{post.content}}</div>
+      </div>
+    </div>
+    <!-- /.container -->
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script>
+      var all_container = new Vue({
+        el: "#all_container",
+        data: {
+          post: [],
+        },
+        created: function () {
+          for (var i = 1; i < 11; i++) {
+            axios
+              .get("/api/v1/get_post/" + i)
+              .then((response) => {
+                if (response.data.status != "success") {
+                  alert(response.data.message);
+                }
+              })
+              .catch(function (error) {
+                // 请求失败处理
+                console.log(error);
+              });
+          }
+        },
+      });
+    </script>
+  </body>
+</html>
