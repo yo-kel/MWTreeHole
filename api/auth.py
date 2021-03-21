@@ -2,7 +2,8 @@
 from api import api_bp
 from flask import request,abort,current_app,jsonify
 from datetime import datetime, timedelta
-from .models import db,User,token_required
+from .models import db, User, token_required
+from .enc import encrypt_data
 import json
 import redis
 import re
@@ -67,13 +68,14 @@ def check_mail_code(mail, code):
             return False
 
 def login_or_register(_mail):
+    _mail = encrypt_data(_mail)
     user_login = User.query.filter_by(mail = _mail).first()
     if user_login: #用户存在则直接返回
         user = User.query.filter_by(id=user_login.id).first()
         return user
     else:
         try:
-            new_user = User(name="nickname", mail=_mail, user_group=0, token=None)
+            new_user = User(mail=_mail, user_group=0)
             db.session.add(new_user)
             db.session.commit()
         except Exception as e:
@@ -101,7 +103,7 @@ def email_captcha():
     #随机验证码
     code = str(uuid.uuid1())[:6]
     #try:
-    print(yag_server.send([mail],"aaa",'bbb:%s' % code))
+    print(yag_server.send([mail],"[MWTreeHole]Verification Code",'Verification Code:%s' % code))
     hset(mail, "code", code)  #验证码存入redis
     hset(mail, "expire_time", (now + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S'))
     expire(mail, 60 * 10)  #设置过期时间
