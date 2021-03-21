@@ -27,6 +27,23 @@ def decrypt_data(encrypt_msg,private_key_native):
     back_text = cipher.decrypt(base64.b64decode(encrypt_msg), 0)
     return back_text.decode('utf-8')
 
+def rsa_sinature_encode(message, private_key):
+    rsakey = RSA.importKey(private_key)
+    signer = signature_PKCS1_v1_5.new(rsakey)
+    digest = SHA.new()
+    digest.update(message.encode("utf8"))
+    sign = signer.sign(digest)
+    signature = base64.b64encode(sign)
+    return signature
+
+def rsa_signature_decode(message, signature):
+    rsakey = RSA.importKey(public_key_native)
+    signer = signature_PKCS1_v1_5.new(rsakey)
+    digest = SHA.new()
+    digest.update(message.encode("utf8"))
+    is_verify = signer.verify(digest, base64.b64decode(signature))
+    return is_verify
+
 def creat_pem():
     random_generator = Random.new().read
     rsa = RSA.generate(2048, random_generator)

@@ -114,10 +114,10 @@ def comment_comment(comment_id):
 def get_comment_post(post_id):
     try:
         comment = Comments.query.filter_by(post_id=post_id)
-        if comment.status == 0:
-            return jsonify({"status": "failure","message":"banned"})
         return_json = {}
-        for index,item in enumerate(comment):
+        for index, item in enumerate(comment):
+            if item.status == 0:
+                continue
             return_json[str(index)] = {
                 "id" : item.id,
                 "body": item.body,
@@ -135,10 +135,10 @@ def get_comment_post(post_id):
 def get_comment_comment(comment_id):
     try:
         comment = Comments.query.filter_by(id=comment_id)
-        if comment.status == 0:
-            return jsonify({"status": "failure","message":"banned"})
         return_json = {}
-        for index,item in enumerate(comment):
+        for index, item in enumerate(comment):
+            if item.status == 0:
+                continue
             return_json[str(index)] = {
                 "id" : item.id,
                 "body": item.body,
