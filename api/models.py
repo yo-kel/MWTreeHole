@@ -1,4 +1,10 @@
+'''
+数据库 表定义
+'''
 import datetime
+
+from flask import current_app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from .extensions import db
 

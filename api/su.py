@@ -1,3 +1,6 @@
+'''
+管理员相关api
+'''
 from flask import Blueprint, request, jsonify, current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 

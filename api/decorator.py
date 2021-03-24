@@ -1,3 +1,6 @@
+'''
+实现权限分级的装饰器
+'''
 import functools
 
 from flask import current_app, jsonify, request

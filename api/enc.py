@@ -1,3 +1,6 @@
+'''
+实现加密、解密，签名、验签，生成密钥的文件
+'''
 import base64
 
 from Crypto import Random
