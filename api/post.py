@@ -5,7 +5,7 @@ from api import api_bp
 
 from .extensions import db
 from .models import User, Post, Comments
-from .models import token_required
+from .decorator import token_required
 from .enc import encrypt_data
 
 @api_bp.route('/new_post', methods=["GET", "POST"])

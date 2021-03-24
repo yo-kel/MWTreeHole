@@ -10,10 +10,11 @@ import redis
 from api import api_bp
 
 from .extensions import db, yag_server, conn_pool
-from .models import User, token_required
+from .decorator import token_required
+from .models import User
 from .enc import encrypt_data
 
-def expire(name, exp=60, ):
+def expire(name, exp=60):
     """
     设置过期时间
     """

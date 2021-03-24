@@ -1,11 +1,15 @@
-from .models import User, Post, Comments
 from flask import Blueprint, request, jsonify, current_app
-from .models import db, su_required, token_required,admin_required
-from api import api_bp
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+from api import api_bp
+
+from .models import User, Post, Comments
+from .extensions import db
+from .decorator import su_required, token_required,admin_required
 from .enc import encrypt_data
 
 @api_bp.route('/sudo/<user_id>', methods=["GET", "POST"])
+@token_required
 @su_required
 def sudo_user():  #用户提权到管理员的函数,验证enc参数是否由su签发
     try:
@@ -19,10 +23,10 @@ def sudo_user():  #用户提权到管理员的函数,验证enc参数是否由su�
         db.session.commit()
         return jsonify({"status": "success"})
     except Exception as e:
-        print(e)
         return jsonify({"status": "failure"})
 
 @api_bp.route('/ban_post/<post_id>', methods=["GET", "POST"])
+@token_required
 @admin_required
 def ban_post(post_id):
     def ban_sub_comment(comments):
@@ -47,6 +51,7 @@ def ban_post(post_id):
         return jsonify({"status": "failure"})
 
 @api_bp.route('/ban_comment/<comment_id>', methods=["GET", "POST"])
+@token_required
 @admin_required
 def ban_comment(comment_id):
     def ban_sub_comment(comments):
@@ -71,12 +76,14 @@ def ban_comment(comment_id):
         
 
 @api_bp.route('/get_author/post/<post_id>', methods=["GET", "POST"])
+@token_required
 @su_required
 def get_post_author(post_id):
     post = Post.query.filter_by(id=post_id).first()
     return jsonify({"status": "success", "author": post.author})
 
 @api_bp.route('/get_author/comment/<comment_id>', methods=["GET", "POST"])
+@token_required
 @su_required
 def get_comment_author(comment_id):
     comment = Comments.query.filter_by(id=comment_id).first()

@@ -1,72 +1,6 @@
-import functools
 import datetime
 
-from flask import current_app, jsonify, request
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-
 from .extensions import db
-from .enc import rsa_signature_decode
-
-def token_required(view_func):
-    @functools.wraps(view_func)
-    def verify_token(*args,**kwargs):
-        try:
-            #在请求头上拿到token
-            token = request.headers["token"]
-        except Exception as e:
-            print(e)
-            return jsonify(code = 4103,msg = 'missing token')
-        
-        s = Serializer(current_app.config["SECRET_KEY"])
-        try:
-            s.loads(token)
-        except Exception:
-            return jsonify(code = 4101,msg = "token outdate")
-
-        return view_func(*args,**kwargs)
-
-    return verify_token
-
-def su_required(view_func):
-    @functools.wraps(view_func)
-    def verify_su(*args,**kwargs):
-        try:
-            #在请求头上拿到token
-            token = request.headers["token"]
-        except Exception as e:
-            print(e)
-            return jsonify(code = 4102,msg = 'missing token')
-        
-        s = Serializer(current_app.config["SECRET_KEY"])
-        try:
-            info = s.loads(token)
-        except Exception:
-            return jsonify(code = 4101,msg = "token outdate")
-        if User.query.filter_by(id=info["id"]).first().user_group != 6:
-                return jsonify(code=4103, msg='unauthorized operation')
-        return view_func(*args,**kwargs)
-
-    return verify_su
-
-def admin_required(view_func):
-    @functools.wraps(view_func)
-    def verify_admin(*args,**kwargs):
-        try:
-            #在请求头上拿到token
-            token = request.headers["token"]
-        except Exception as e:
-            print(e)
-            return jsonify(code = 4102,msg = 'missing token')
-        
-        s = Serializer(current_app.config["SECRET_KEY"])
-        try:
-            info = s.loads(token)
-            if User.query.filter_by(id=info["id"]).first().user_group <5 :
-                return jsonify(code=4103, msg='unauthorized operation')
-        except Exception:
-            return jsonify(code = 4101,msg = "token outdate")
-        return view_func(*args,**kwargs)
-    return verify_admin
 
 class User(db.Model):
     '''
@@ -79,7 +13,6 @@ class User(db.Model):
     public_key = db.Column(db.Text) #管理员的public_key
     token = db.Column(db.String(128)) #token字段，暂时没用
 
-    #comments = db.relationship('Comments', back_populates='author', cascade='all')
     follow_post = db.Column(db.Text) #关注的帖子
 
     def generate_auth_token(self, expiration = 600): #生成token
@@ -98,7 +31,6 @@ class Post(db.Model):
     operator = db.Column(db.Integer)
 
     author = db.Column(db.Text) #作者信息,使用RSA算法保证安全
-    #author_id = db.Column(db.Integer, db.ForeignKey('t_user.id'))
     comments = db.relationship('Comments', back_populates='post', cascade='all') #一级评论的id
 
 
@@ -119,6 +51,5 @@ class Comments(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('t_post.id')) #所属树洞的id,一级评论方有此字段
 
     post = db.relationship('Post', back_populates='comments') #所属的树洞
-    #author = db.relationship('User', back_populates='comments') 
     replies = db.relationship('Comments', back_populates='replied', cascade='all') #回复自己的
     replied = db.relationship('Comments', back_populates='replies', remote_side=[id]) #回复的
