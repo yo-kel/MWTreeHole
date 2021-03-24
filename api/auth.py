@@ -1,6 +1,6 @@
 # coding:utf-8
 from api import api_bp
-from flask import request,abort,current_app,jsonify
+from flask import request,abort,current_app,jsonify,Response
 from datetime import datetime, timedelta
 from .models import db, User, token_required
 from .enc import encrypt_data
@@ -90,6 +90,7 @@ def email_captcha():
     """
     获取邮箱验证码
     """
+    print(request)
     now = datetime.now()
     mail = request.get_json(force=True).get('mail',None)
     mail = check_mail(mail)
@@ -124,10 +125,14 @@ def login():
         return jsonify({"status":"failure","message":"wrong code"})
     user = login_or_register(mail)
     if user is None:
-        return jsonify({"status":"failure","message":"unable to create"})
-    return jsonify({"status":"success","message":"ok","token":user.generate_auth_token(expiration=60*60)})
+        return jsonify({"status": "failure", "message": "unable to create"})
+    token = user.generate_auth_token(expiration=60 * 60 * 24)
+    outdate=datetime.today() + timedelta(days=1)
+    response = Response(json.dumps({"status": "success", "message": "ok", "token": str(token)}), content_type='application/json')
+    response.set_cookie("token", token, expires=outdate)
+    return response
 
 @api_bp.route('/test_token', methods=['GET', 'POST'])
 @token_required
 def test_token():
-    return 'okok'
+    return jsonify({"status":"success"})
