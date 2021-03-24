@@ -1,27 +1,39 @@
-from flask import Flask, jsonify, redirect, url_for,send_from_directory,request
-from config import Config
-from flask_mail import Message, Mail
-from api import auth
-import api.models
-from api.models import db
-from api.models import token_required
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import functools
 
-app=Flask(__name__,static_url_path='')
-app.config.from_object(Config)
+from flask import Flask, jsonify, redirect, url_for,send_from_directory,request
+from flask_mail import Message, Mail
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-mail_host = Mail()
+from config import Config
 
-def creatapp():
-    db.init_app(app)
-    app.register_blueprint(auth.api_bp)
-    mail_host.init_app(app)
+from api import api_bp
+from api.extensions import db
+from api.models import User, Post, Comments
+
+def create_app():
+    app=Flask(__name__,static_url_path='')
+    app.config.from_object(Config)
+    register_extensions(app)
+    register_blueprints(app)
     return app
-db.create_all(app=creatapp())
 
-#creatapp()
+def register_extensions(app):
+    db.init_app(app)
 
+def register_blueprints(app):
+    app.register_blueprint(api_bp)
+
+# mail_host = Mail()
+
+# def creatapp():
+# db.init_app(app)
+
+# mail_host.init_app(app)
+# db.create_all(app)
+    # return app
+#
+
+'''
 def login_required(view_func):
     @functools.wraps(view_func)
     def verify_login(*args, **kwargs):
@@ -49,7 +61,8 @@ def index():
 @app.route('/login')
 def login():
     return send_from_directory("layout","login.html")
-
+'''
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True)

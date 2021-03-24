@@ -1,10 +1,11 @@
-from flask_sqlalchemy import SQLAlchemy
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app,jsonify,request
 import functools
 import datetime
+
+from flask import current_app, jsonify, request
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+from .extensions import db
 from .enc import rsa_signature_decode
-db = SQLAlchemy()
 
 def token_required(view_func):
     @functools.wraps(view_func)

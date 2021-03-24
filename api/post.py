@@ -1,8 +1,11 @@
-from .models import User, Post, Comments
 from flask import Blueprint, request, jsonify, current_app
-from .models import db, token_required
-from api import api_bp
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+from api import api_bp
+
+from .extensions import db
+from .models import User, Post, Comments
+from .models import token_required
 from .enc import encrypt_data
 
 @api_bp.route('/new_post', methods=["GET", "POST"])

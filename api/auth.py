@@ -1,23 +1,23 @@
 # coding:utf-8
-from api import api_bp
-from flask import request,abort,current_app,jsonify,Response
-from datetime import datetime, timedelta
-from .models import db, User, token_required
-from .enc import encrypt_data
 import json
-import redis
 import re
 import uuid
-import yagmail
+from datetime import datetime, timedelta
 
-yag_server = yagmail.SMTP(user='******', password='******', host='smtp.qq.com')
+from flask import request, abort, current_app, jsonify, Response
+import redis
 
+from api import api_bp
 
-def expire(name, exp=60):
+from .extensions import db, yag_server, conn_pool
+from .models import User, token_required
+from .enc import encrypt_data
+
+def expire(name, exp=60, ):
     """
     设置过期时间
     """
-    r = redis.StrictRedis('127.0.0.1', '6379', 1)
+    r = redis.StrictRedis(connection_pool=conn_pool)
     r.expire(name, exp)
 
 def hset(name, key, value):
@@ -25,14 +25,14 @@ def hset(name, key, value):
     设置指定hash表
     :return:
     """
-    r = redis.StrictRedis('127.0.0.1', '6379', 1)
+    r = redis.StrictRedis(connection_pool=conn_pool)
     r.hset(name, key, value)
 
 def hget(name, key):
     """
     读取指定hash表的键值
     """
-    r = redis.StrictRedis('127.0.0.1', '6379', 1)
+    r = redis.StrictRedis(connection_pool=conn_pool)
     value = r.hget(name, key)
     print(value)
     return value.decode('utf-8') if value else value
