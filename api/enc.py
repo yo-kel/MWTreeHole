@@ -25,7 +25,6 @@ def encrypt_data(msg):
     :param msg: 要加密内容
     :return:  加密之后的密文
     """
-    # 获取公钥
     publickey = RSA.importKey(public_key_native)
     # 分段加密
     pk = PKCS1_cipher.new(publickey)
@@ -35,7 +34,6 @@ def encrypt_data(msg):
         encrypt_text.append(pk.encrypt(cont.encode()))
     # 加密完进行拼接
     cipher_text = b''.join(encrypt_text)
-     # base64进行编码
     result = base64.b64encode(cipher_text)
     return result.decode()
 
@@ -46,12 +44,9 @@ def decrypt_data(msg, privatekey):
     :param msg: 密文：字符串类型
     :return:  解密之后的内容
     """
-    # base64解码
     msg = base64.b64decode(msg)
-    # 获取私钥
     rsakey = RSA.importKey(privatekey)
     cipher =  PKCS1_cipher.new(rsakey)
-    # 进行解密
     text = []
     #2048bit密钥256，1024bit密钥128
     for i in range(0,len(msg),256):

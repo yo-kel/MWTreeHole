@@ -11,7 +11,7 @@ from .models import User, Post, Comments
 from .decorator import token_required
 from .enc import encrypt_data
 
-@api_bp.route('/new_post', methods=["GET", "POST"])
+@api_bp.route('/newPost', methods=["GET", "POST"])
 @token_required
 def new_post():
     try:
@@ -39,7 +39,7 @@ def new_post():
     except Exception as e:
         return jsonify({"status": "failure"})
 
-@api_bp.route('/new_post_course', methods=["GET", "POST"])
+@api_bp.route('/newCoursePost', methods=["GET", "POST"])
 @token_required
 def new_post_course():
     try:
@@ -58,7 +58,7 @@ def new_post_course():
     except Exception as e:
         return jsonify({"status": "failure"})
 
-@api_bp.route('/get_post/<post_id>', methods=["GET", "POST"])
+@api_bp.route('/getPost/<post_id>', methods=["GET", "POST"])
 @token_required
 def get_post(post_id):
     post = Post.query.get_or_404(post_id)

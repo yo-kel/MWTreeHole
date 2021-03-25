@@ -28,7 +28,7 @@ def sudo_user():  #用户提权到管理员的函数,验证enc参数是否由su�
     except Exception as e:
         return jsonify({"status": "failure"})
 
-@api_bp.route('/ban_post/<post_id>', methods=["GET", "POST"])
+@api_bp.route('/banPost/<post_id>', methods=["GET", "POST"])
 @token_required
 @admin_required
 def ban_post(post_id):
@@ -53,7 +53,7 @@ def ban_post(post_id):
         print(e)
         return jsonify({"status": "failure"})
 
-@api_bp.route('/ban_comment/<comment_id>', methods=["GET", "POST"])
+@api_bp.route('/banComment/<comment_id>', methods=["GET", "POST"])
 @token_required
 @admin_required
 def ban_comment(comment_id):
@@ -78,14 +78,14 @@ def ban_comment(comment_id):
         return jsonify({"status": "failure"})
         
 
-@api_bp.route('/get_author/post/<post_id>', methods=["GET", "POST"])
+@api_bp.route('/getAuthor/post/<post_id>', methods=["GET", "POST"])
 @token_required
 @su_required
 def get_post_author(post_id):
     post = Post.query.filter_by(id=post_id).first()
     return jsonify({"status": "success", "author": post.author})
 
-@api_bp.route('/get_author/comment/<comment_id>', methods=["GET", "POST"])
+@api_bp.route('/getAuthor/comment/<comment_id>', methods=["GET", "POST"])
 @token_required
 @su_required
 def get_comment_author(comment_id):

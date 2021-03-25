@@ -20,7 +20,6 @@ def expire(name, exp=60):
 def hset(name, key, value):
     """
     设置指定hash表
-    :return:
     """
     r = redis.StrictRedis(connection_pool=conn_pool)
     r.hset(name, key, value)
