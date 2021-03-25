@@ -18,17 +18,47 @@ r81+PB0+u0OpcxUxAwqIx/rxhuZNVkuoguUywEJhiYZ8e6qR1NGL5POolsoQMY8X
 EIVik9fqPrEgkpHRTZib7CUfMevaOVaW+nYuBO/PK1376ePO4QhGsX4OrFab/NzO
 CwIDAQAB
 -----END PUBLIC KEY-----'''
-def encrypt_data(msg):
-    public_key = RSA.importKey(public_key_native)
-    cipher = PKCS1_cipher.new(public_key)
-    encrypt_text = base64.b64encode(cipher.encrypt(bytes(msg.encode("utf8"))))
-    return encrypt_text.decode('utf-8')
 
-def decrypt_data(encrypt_msg,private_key_native):
-    private_key = RSA.importKey(private_key_native)
-    cipher = PKCS1_cipher.new(private_key)
-    back_text = cipher.decrypt(base64.b64decode(encrypt_msg), 0)
-    return back_text.decode('utf-8')
+def encrypt_data(msg):
+    """
+    公钥加密
+    :param msg: 要加密内容
+    :return:  加密之后的密文
+    """
+    # 获取公钥
+    publickey = RSA.importKey(public_key_native)
+    # 分段加密
+    pk = PKCS1_cipher.new(publickey)
+    encrypt_text = []
+    for i in range(0,len(msg),100):
+        cont = msg[i:i+100]
+        encrypt_text.append(pk.encrypt(cont.encode()))
+    # 加密完进行拼接
+    cipher_text = b''.join(encrypt_text)
+     # base64进行编码
+    result = base64.b64encode(cipher_text)
+    return result.decode()
+
+
+def decrypt_data(msg, privatekey):
+    """
+    私钥进行解密
+    :param msg: 密文：字符串类型
+    :return:  解密之后的内容
+    """
+    # base64解码
+    msg = base64.b64decode(msg)
+    # 获取私钥
+    rsakey = RSA.importKey(privatekey)
+    cipher =  PKCS1_cipher.new(rsakey)
+    # 进行解密
+    text = []
+    #2048bit密钥256，1024bit密钥128
+    for i in range(0,len(msg),256):
+        cont = msg[i:i+256]
+        text.append(cipher.decrypt(cont,1))
+    text = b''.join(text)
+    return text.decode()
 
 def rsa_sinature_encode(message, private_key):
     rsakey = RSA.importKey(private_key)
