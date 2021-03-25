@@ -16,8 +16,8 @@ from .decorator import token_required
 from .models import User
 from .enc import encrypt_data
 
-@api_bp.route('/email_captcha', methods=['GET', 'POST'])
-def email_captcha():
+@api_bp.route('/sendEmailCode', methods=['POST'])
+def sendEmailCode():
     """
     获取邮箱验证码
     """
@@ -41,22 +41,21 @@ def email_captcha():
     expire(mail, 60 * 10)  #设置验证码过期时间
     return jsonify({"status":"success","message":"ok"})
     
-@api_bp.route('/login', methods=['GET', 'POST'])
+@api_bp.route('/login', methods=['POST'])
 def login():
     request_data = request.get_json(force=True)
     mail = request_data.get('mail', None)
     code = request_data.get('code', None)
     if mail is None or code is None:
         return jsonify({"status":"failure","message":"get empty param"})
-    flag = check_mail_code(mail, code)
-    if not flag:
+    if not check_mail_code(mail, code):
         return jsonify({"status":"failure","message":"wrong code"})
     user = login_or_register(mail)
     if user is None:
         return jsonify({"status": "failure", "message": "unable to create"})
     token = user.generate_auth_token(expiration=60 * 60 * 24) # 签发一天有效期的token
-    outdate=datetime.today() + timedelta(days=1)
     response = Response(json.dumps({"status": "success", "message": "ok", "token": str(token)}), content_type='application/json')
+    outdate=datetime.today() + timedelta(days=1)
     response.set_cookie("token", token, expires=outdate)
     return response
 
