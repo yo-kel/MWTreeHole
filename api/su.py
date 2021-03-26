@@ -72,11 +72,10 @@ def ban_comment(comment_id):
         comment = Comments.query.filter_by(id=comment_id).first()
         comment.status = 0
         comment.operator = user_id
-        ban_sub_comment(comment.comments) #递归删除子评论
+        ban_sub_comment(comment.replies) #递归删除子评论
         db.session.commit()
         return jsonify({"status": "success"})
     except Exception as e:
-        print(e)
         return jsonify({"status": "failure"})
         
 # 获取作者信息(返回的是加密后数据，su在本地自行解密)
