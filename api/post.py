@@ -72,7 +72,8 @@ def getPost(post_id):
             {
                 "status": "success",
                 "title": post.title,
-                "content": post.content
+                "content": post.content,
+                "kind": post.kind
             }
         )
     else:
