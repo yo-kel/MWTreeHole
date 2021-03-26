@@ -14,7 +14,7 @@ from .enc import encrypt_data, rsa_signature_decode
 @api_bp.route('/sudo/<user_id>', methods=["GET", "POST"])
 @token_required
 @su_required
-def sudo_user():  #用户提权到管理员的函数,验证enc参数是否由su签名
+def sudo_user(user_id):  #用户提权到管理员的函数,验证enc参数是否由su签名
     try:
         request_data = request.get_json(force=True)
         enc_id = request_data.get("enc_id")
