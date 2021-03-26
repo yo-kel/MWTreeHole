@@ -1,3 +1,5 @@
+### 登录/注册
+
 <details>
 <summary>1. 请求发送邮箱验证码</summary>
 
@@ -68,6 +70,8 @@
 
 </details>
 
+### 树洞主体功能
+
 <details>
 <summary>3. 发送树洞</summary>
 
@@ -105,7 +109,40 @@
 </details>
 
 <details>
-<summary>4. 获取树洞</summary>
+<summary>4. 发送爱选修主贴</summary>
+
+### 接口功能
+
+> 发送爱选修主贴
+
+### URL
+
+> /api/v1/sendEmailCode
+
+### HTTP 请求方式
+
+> POST
+
+### 请求参数
+
+> | 参数    | 必选 | 类型   | 说明                               |
+> | :------ | :--- | :----- | ---------------------------------- |
+> | token   | ture | string | 存放在 header 中<br>"token":"xxxx" |
+> | title   | ture | string | 标题                               |
+> | content | ture | string | 内容(json)                         |
+
+### 返回字段
+
+> | 返回字段 | 字段类型 | 说明                                              |
+> | :------- | :------- | :------------------------------------------------ |
+> | status   | string   | 返回结果状态<br>-success：正常 <br>-failure：错误 |
+> | status   | string   | 返回结果状态<br>-success：正常 <br>-failure：错误 |
+> | post_id  | int      | 发送成功时返回 文章 的 id                         |
+
+</details>
+
+<details>
+<summary>5. 获取帖子</summary>
 
 ### 接口功能
 
@@ -136,7 +173,7 @@
 </details>
 
 <details>
-<summary>5. 评论树洞</summary>
+<summary>6. 评论树洞</summary>
 
 ### 接口功能
 
@@ -171,7 +208,7 @@
 </details>
 
 <details>
-<summary>6. 评论评论</summary>
+<summary>7. 回复评论</summary>
 
 ### 接口功能
 
@@ -206,7 +243,7 @@
 </details>
 
 <details>
-<summary>7. 获取树洞评论</summary>
+<summary>8. 获取树洞评论</summary>
 
 ### 接口功能
 
@@ -260,11 +297,11 @@
 </details>
 
 <details>
-<summary>8. 获取评论的评论</summary>
+<summary>9. 获取评论的回复</summary>
 
 ### 接口功能
 
-> 获取评论的评论
+> 获取评论的回复
 
 ### URL
 
@@ -296,5 +333,195 @@
   "status": "success"
 }
 ```
+
+</details>
+
+### 管理功能
+
+<details>
+<summary>10. 用户提权</summary>
+
+### 接口功能
+
+> 提权某用户权限到管理员
+
+### 权限要求
+
+> su
+
+### URL
+
+> /api/v1/sudo/<user_id>
+
+### HTTP 请求方式
+
+> POST
+
+### 支持格式
+
+> JSON
+
+### 请求参数
+
+> | 参数   | 必选 | 类型   | 说明                               |
+> | :----- | :--- | :----- | ---------------------------------- |
+> | token  | ture | string | 存放在 header 中<br>"token":"xxxx" |
+> | enc_id | ture | string | 使用 su 私钥签名的用户 id          |
+
+### 返回字段
+
+> | 返回字段 | 字段类型 | 说明                                              |
+> | :------- | :------- | :------------------------------------------------ |
+> | status   | string   | 返回结果状态<br>-success：正常 <br>-failure：错误 |
+
+</details>
+
+<details>
+<summary>11. 封禁帖子</summary>
+
+### 接口功能
+
+> 封禁帖子
+
+### 权限要求
+
+> 管理员
+
+### URL
+
+> /api/v1/banPost/<post_id>
+
+### HTTP 请求方式
+
+> POST
+
+### 支持格式
+
+> JSON
+
+### 请求参数
+
+> | 参数  | 必选 | 类型   | 说明                               |
+> | :---- | :--- | :----- | ---------------------------------- |
+> | token | ture | string | 存放在 header 中<br>"token":"xxxx" |
+
+### 返回字段
+
+> | 返回字段 | 字段类型 | 说明                                              |
+> | :------- | :------- | :------------------------------------------------ |
+> | status   | string   | 返回结果状态<br>-success：正常 <br>-failure：错误 |
+
+</details>
+
+<details>
+<summary>12. 封禁评论</summary>
+
+### 接口功能
+
+> 封禁评论
+
+### 权限要求
+
+> 管理员
+
+### URL
+
+> /api/v1/banComment/<comment_id>
+
+### HTTP 请求方式
+
+> POST
+
+### 支持格式
+
+> JSON
+
+### 请求参数
+
+> | 参数  | 必选 | 类型   | 说明                               |
+> | :---- | :--- | :----- | ---------------------------------- |
+> | token | ture | string | 存放在 header 中<br>"token":"xxxx" |
+
+### 返回字段
+
+> | 返回字段 | 字段类型 | 说明                                              |
+> | :------- | :------- | :------------------------------------------------ |
+> | status   | string   | 返回结果状态<br>-success：正常 <br>-failure：错误 |
+
+</details>
+
+<details>
+<summary>13. 获取帖子作者</summary>
+
+### 接口功能
+
+> 获取帖子作者
+
+### 权限要求
+
+> su
+
+### URL
+
+> /api/v1/getAuthor/post/<post_id>
+
+### HTTP 请求方式
+
+> GET
+
+### 支持格式
+
+> JSON
+
+### 请求参数
+
+> | 参数  | 必选 | 类型   | 说明                               |
+> | :---- | :--- | :----- | ---------------------------------- |
+> | token | ture | string | 存放在 header 中<br>"token":"xxxx" |
+
+### 返回字段
+
+> | 返回字段 | 字段类型 | 说明                                              |
+> | :------- | :------- | :------------------------------------------------ |
+> | status   | string   | 返回结果状态<br>-success：正常 <br>-failure：错误 |
+> | author   | string   | RSA 二次加密后的用户信息                          |
+
+</details>
+
+<details>
+<summary>14. 获取评论作者</summary>
+
+### 接口功能
+
+> 获取评论作者
+
+### 权限要求
+
+> su
+
+### URL
+
+> /api/v1/getAuthor/comment/<comment_id>
+
+### HTTP 请求方式
+
+> GET
+
+### 支持格式
+
+> JSON
+
+### 请求参数
+
+> | 参数  | 必选 | 类型   | 说明                               |
+> | :---- | :--- | :----- | ---------------------------------- |
+> | token | ture | string | 存放在 header 中<br>"token":"xxxx" |
+
+### 返回字段
+
+> | 返回字段 | 字段类型 | 说明                                              |
+> | :------- | :------- | :------------------------------------------------ |
+> | status   | string   | 返回结果状态<br>-success：正常 <br>-failure：错误 |
+> | author   | string   | RSA 二次加密后的用户信息                          |
 
 </details>
