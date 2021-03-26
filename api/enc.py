@@ -9,6 +9,8 @@ from Crypto.Hash import SHA
 from Crypto.Signature import PKCS1_v1_5 as PKCS1_signature
 from Crypto.Cipher import PKCS1_v1_5 as PKCS1_cipher
 
+import hashlib
+
 public_key_native = '''-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt1MZbsEOGIli2cGEGOO3
 VHv+O0s41ex8KQMECw0x2B9rAXwyMfjNbAnH+TakMF2tEjGcfj/qWiOY9MQrRCe8
@@ -55,9 +57,14 @@ def decrypt_data(msg, privatekey):
     text = b''.join(text)
     return text.decode()
 
+def sha_data(msg):
+    s = hashlib.sha256()
+    s.update(msg.encode("utf-8"))
+    return(s.hexdigest())
+
 def rsa_sinature_encode(message, private_key):
     rsakey = RSA.importKey(private_key)
-    signer = signature_PKCS1_v1_5.new(rsakey)
+    signer = PKCS1_signature.new(rsakey)
     digest = SHA.new()
     digest.update(message.encode("utf8"))
     sign = signer.sign(digest)
@@ -66,7 +73,7 @@ def rsa_sinature_encode(message, private_key):
 
 def rsa_signature_decode(message, signature):
     rsakey = RSA.importKey(public_key_native)
-    signer = signature_PKCS1_v1_5.new(rsakey)
+    signer = PKCS1_signature.new(rsakey)
     digest = SHA.new()
     digest.update(message.encode("utf8"))
     is_verify = signer.verify(digest, base64.b64decode(signature))

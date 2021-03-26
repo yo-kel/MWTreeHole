@@ -5,6 +5,7 @@ import functools
 
 from flask import current_app, jsonify, request
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from .models import User
 
 def token_required(view_func):
     @functools.wraps(view_func)
@@ -25,6 +26,7 @@ def su_required(view_func):
     @functools.wraps(view_func)
     def verify_su(*args, **kwargs):
         #使用时配合token_required装饰器使用
+        s = Serializer(current_app.config["SECRET_KEY"])
         token = request.headers["token"]
         info = s.loads(token)
         if User.query.filter_by(id=info["id"]).first().user_group != 6:

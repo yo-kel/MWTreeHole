@@ -14,7 +14,7 @@ from .extensions import db, yag_server, conn_pool
 from .extensions import expire, hset, hget
 from .decorator import token_required
 from .models import User
-from .enc import encrypt_data
+from .enc import encrypt_data, sha_data
 
 @api_bp.route('/sendEmailCode', methods=['POST'])
 def sendEmailCode():
@@ -49,12 +49,12 @@ def login():
     if mail is None or code is None:
         return jsonify({"status":"failure","message":"get empty param"})
     if not check_mail_code(mail, code):
-        return jsonify({"status":"failure","message":"wrong code"})
+        return jsonify({"status": "failure", "message": "wrong code"})
     user = login_or_register(mail)
     if user is None:
         return jsonify({"status": "failure", "message": "unable to create"})
     token = user.generate_auth_token(expiration=60 * 60 * 24) # 签发一天有效期的token
-    response = Response(json.dumps({"status": "success", "message": "ok", "token": str(token)}), content_type='application/json')
+    response = Response(json.dumps({"status": "success", "message": "ok", "token": str(token), "id":user.id}), content_type='application/json')
     outdate=datetime.today() + timedelta(days=1)
     response.set_cookie("token", token, expires=outdate)
     return response
@@ -88,15 +88,16 @@ def check_mail_code(mail, code):
         _code = hget(mail, "code")
         return _code==code
 
-def login_or_register(_mail):
-    _mail = encrypt_data(_mail) # 加密mail信息
-    user_login = User.query.filter_by(mail = _mail).first()
+def login_or_register(mail):
+    mail_sha = sha_data(mail)
+    user_login = User.query.filter_by(mail_sha = mail_sha).first()
     if user_login: #用户存在则直接返回
         user = User.query.filter_by(id=user_login.id).first()
         return user
     else:
         try:
-            new_user = User(mail=_mail, user_group=0)
+            _mail = encrypt_data(mail)  # RSA加密mail信息
+            new_user = User(mail=_mail,mail_sha = mail_sha, user_group=0)
             db.session.add(new_user)
             db.session.commit()
         except Exception as e:

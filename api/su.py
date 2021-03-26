@@ -9,12 +9,12 @@ from api import api_bp
 from .models import User, Post, Comments
 from .extensions import db
 from .decorator import su_required, token_required,admin_required
-from .enc import encrypt_data
+from .enc import encrypt_data, rsa_signature_decode
 
 @api_bp.route('/sudo/<user_id>', methods=["GET", "POST"])
 @token_required
 @su_required
-def sudo_user():  #用户提权到管理员的函数,验证enc参数是否由su签发
+def sudo_user():  #用户提权到管理员的函数,验证enc参数是否由su签名
     try:
         request_data = request.get_json(force=True)
         enc_id = request_data.get("enc_id")
@@ -27,6 +27,8 @@ def sudo_user():  #用户提权到管理员的函数,验证enc参数是否由su�
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"status": "failure"})
+
+# 封禁树洞/评论
 
 @api_bp.route('/banPost/<post_id>', methods=["GET", "POST"])
 @token_required
@@ -77,6 +79,7 @@ def ban_comment(comment_id):
         print(e)
         return jsonify({"status": "failure"})
         
+# 获取作者信息(返回的是加密后数据，su在本地自行解密)
 
 @api_bp.route('/getAuthor/post/<post_id>', methods=["GET", "POST"])
 @token_required
@@ -93,7 +96,6 @@ def get_comment_author(comment_id):
     return jsonify({"status": "success", "author": comment.author})
 
 @api_bp.route('/sudo_test', methods=["GET", "POST"])
-@token_required
 def sudo_test():
     user = User.query.filter_by(id=1).first()
     user.user_group = 6

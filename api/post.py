@@ -11,9 +11,11 @@ from .models import User, Post, Comments
 from .decorator import token_required
 from .enc import encrypt_data
 
-@api_bp.route('/newPost', methods=["GET", "POST"])
+# 发送树洞
+
+@api_bp.route('/newPost', methods=["POST"])
 @token_required
-def new_post():
+def newPost():
     try:
         token = request.headers["token"]
         s = Serializer(current_app.config["SECRET_KEY"])
@@ -39,9 +41,9 @@ def new_post():
     except Exception as e:
         return jsonify({"status": "failure"})
 
-@api_bp.route('/newCoursePost', methods=["GET", "POST"])
+@api_bp.route('/newCoursePost', methods=["POST"])
 @token_required
-def new_post_course():
+def newCoursePost():
     try:
         token = request.headers["token"]
         s = Serializer(current_app.config["SECRET_KEY"])
@@ -56,11 +58,14 @@ def new_post_course():
         db.session.commit()
         return jsonify({"status": "success", "post_id": post.id})
     except Exception as e:
+        print(e)
         return jsonify({"status": "failure"})
 
-@api_bp.route('/getPost/<post_id>', methods=["GET", "POST"])
+# 获取树洞
+
+@api_bp.route('/getPost/<post_id>', methods=["GET"])
 @token_required
-def get_post(post_id):
+def getPost(post_id):
     post = Post.query.get_or_404(post_id)
     if (post.status==1):
         return_json = jsonify(
@@ -79,9 +84,11 @@ def get_post(post_id):
         )
     return return_json
 
+# 评论
+
 @api_bp.route('/comment/post/<post_id>', methods=["POST"])
 @token_required
-def comment_post(post_id):
+def commentPost(post_id):
     try:
         token = request.headers["token"]
         s = Serializer(current_app.config["SECRET_KEY"])
@@ -102,7 +109,7 @@ def comment_post(post_id):
 
 @api_bp.route('/comment/comment/<comment_id>', methods=["POST"])
 @token_required
-def comment_comment(comment_id):
+def commentComment(comment_id):
     try:
         token = request.headers["token"]
         s = Serializer(current_app.config["SECRET_KEY"])
@@ -122,6 +129,7 @@ def comment_comment(comment_id):
     except Exception as e:
         return jsonify({"status": "failure"})
 
+#获取评论
 @api_bp.route('/comment/post/<post_id>', methods=["GET"])
 @token_required
 def get_comment_post(post_id):

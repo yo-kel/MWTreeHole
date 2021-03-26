@@ -15,9 +15,10 @@ class User(db.Model):
     __tablename__ = 't_user'
     id = db.Column(db.Integer, primary_key = True)
     mail = db.Column(db.Text)  #邮箱,使用RSA算法加密
+    mail_sha = db.Column(db.Text)  #邮箱的sha摘要，仅做登录判断是否重复使用
     
     user_group = db.Column(db.Integer, default=0)  #用户组,0为普通用户,6为管理员
-    public_key = db.Column(db.Text) #管理员的public_key
+    public_key = db.Column(db.Text)  #管理员的public_key
 
     def generate_auth_token(self, expiration = 600): #生成token
         s = Serializer(current_app.config['SECRET_KEY'], expires_in = expiration)
