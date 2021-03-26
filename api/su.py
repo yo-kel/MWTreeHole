@@ -11,7 +11,7 @@ from .extensions import db
 from .decorator import su_required, token_required,admin_required
 from .enc import encrypt_data, rsa_signature_decode
 
-@api_bp.route('/sudo/<user_id>', methods=["GET", "POST"])
+@api_bp.route('/sudo/<user_id>', methods=["POST"])
 @token_required
 @su_required
 def sudo_user(user_id):  #用户提权到管理员的函数,验证enc参数是否由su签名
@@ -30,7 +30,7 @@ def sudo_user(user_id):  #用户提权到管理员的函数,验证enc参数是�
 
 # 封禁树洞/评论
 
-@api_bp.route('/banPost/<post_id>', methods=["GET", "POST"])
+@api_bp.route('/banPost/<post_id>', methods=["POST"])
 @token_required
 @admin_required
 def ban_post(post_id):
@@ -55,7 +55,7 @@ def ban_post(post_id):
         print(e)
         return jsonify({"status": "failure"})
 
-@api_bp.route('/banComment/<comment_id>', methods=["GET", "POST"])
+@api_bp.route('/banComment/<comment_id>', methods=["POST"])
 @token_required
 @admin_required
 def ban_comment(comment_id):
@@ -81,14 +81,14 @@ def ban_comment(comment_id):
         
 # 获取作者信息(返回的是加密后数据，su在本地自行解密)
 
-@api_bp.route('/getAuthor/post/<post_id>', methods=["GET", "POST"])
+@api_bp.route('/getAuthor/post/<post_id>', methods=["GET"])
 @token_required
 @su_required
 def get_post_author(post_id):
     post = Post.query.filter_by(id=post_id).first()
     return jsonify({"status": "success", "author": post.author})
 
-@api_bp.route('/getAuthor/comment/<comment_id>', methods=["GET", "POST"])
+@api_bp.route('/getAuthor/comment/<comment_id>', methods=["GET"])
 @token_required
 @su_required
 def get_comment_author(comment_id):
