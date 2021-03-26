@@ -134,6 +134,13 @@ def commentComment(comment_id):
 @api_bp.route('/comment/post/<post_id>', methods=["GET"])
 @token_required
 def get_comment_post(post_id):
+    def get_sub_comment(comment):
+        data = []
+        for reply in comment.replies:
+            reply_detail = {"id": reply.id, "body": reply.body, "timestamps": reply.timestamps, "replied_id":reply.replied_id}
+            reply_detail["replies"] = get_sub_comment(reply)
+            data.append(reply_detail)
+        return data
     try:
         comment = Comments.query.filter_by(post_id=post_id)
         return_json = {}
@@ -145,16 +152,24 @@ def get_comment_post(post_id):
                 "body": item.body,
                 "timestamps": item.timestamps,
                 "replied_id": item.replied_id,
-                "replies": [replie.id for replie in item.replies]
+                "replies": get_sub_comment(item)
             }
         return jsonify({"status": "success","data":return_json})
     except Exception as e:
+        print(e)
         return jsonify({"status": "failure"})
 
 @api_bp.route('/comment/comment/<comment_id>', methods=["GET"])
 @token_required
 def get_comment_comment(comment_id):
     try:
+        def get_sub_comment(comment):
+            data = []
+            for reply in comment.replies:
+                reply_detail = {"id": reply.id, "body": reply.body, "timestamps": reply.timestamps, "replied_id":reply.replied_id}
+                reply_detail["replies"] = get_sub_comment(reply)
+                data.append(reply_detail)
+            return data
         comment = Comments.query.filter_by(id=comment_id)
         return_json = {}
         for index, item in enumerate(comment):
@@ -165,7 +180,7 @@ def get_comment_comment(comment_id):
                 "body": item.body,
                 "timestamps": item.timestamps,
                 "replied_id": item.replied_id,
-                "replies": [replie.id for replie in item.replies]
+                "replies": get_sub_comment(item)
             }
         return jsonify({"status": "success","data":return_json})
     except Exception as e:
