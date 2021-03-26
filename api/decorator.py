@@ -39,6 +39,7 @@ def admin_required(view_func):
     def verify_admin(*args, **kwargs):
         #使用时配合token_required装饰器使用
         s = Serializer(current_app.config["SECRET_KEY"])
+        token = request.headers["token"]
         info = s.loads(token)
         if User.query.filter_by(id=info["id"]).first().user_group <5 :
             return jsonify(code=4103, msg='unauthorized operation')
